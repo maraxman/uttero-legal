@@ -1,7 +1,8 @@
 # Zásady ochrany osobních údajů — Uttero
 
-**Účinné od:** 5. května 2026
-**Verze:** 1.0
+**Účinné od:** 14. srpna 2026
+**Verze:** 2.0
+**Platí pro:** Uttero pro Android (`app.uttero.android`)
 **Provozovatel:** Pavel Vokoun, fyzická osoba, Česká republika
 **Kontakt:** pavel.vokoun@gmail.com
 
@@ -9,9 +10,11 @@
 
 ## 1. Úvod
 
-Tyto zásady ochrany osobních údajů popisují, jaké údaje aplikace **Uttero** (dále jen „aplikace") shromažďuje, jak je používá a komu je předává. Aplikace je diktovací klávesnice, která převádí mluvené slovo na text.
+Tyto zásady popisují, jaké údaje aplikace **Uttero** (dále jen „aplikace") zpracovává, kde je ukládá a komu je předává. Uttero je diktovací klávesnice pro Android, která převádí mluvené slovo na text.
 
-Používáním aplikace souhlasíte se zpracováním údajů popsaným v tomto dokumentu.
+Aplikace nemá uživatelské účty a nevyžaduje registraci. Všechna data vznikají a zůstávají v telefonu, s výjimkou toho, co je popsáno v bodu 4.
+
+Uttero pro Android je port [iOS aplikace Uttero](https://danielgamrot.cz/nastroje/uttero-ios/) od Daniela Gamrota. Jde o samostatnou aplikaci se samostatným kódem — data se mezi verzemi nesdílejí a tyto zásady platí výhradně pro verzi pro Android.
 
 ---
 
@@ -19,149 +22,176 @@ Používáním aplikace souhlasíte se zpracováním údajů popsaným v tomto d
 
 ### 2.1 Zvuk z mikrofonu
 
-Aplikace přistupuje k mikrofonu zařízení **pouze tehdy, když aktivně diktujete** (uživatel klepne na tlačítko mikrofonu v klávesnici). Zvuk:
+Aplikace přistupuje k mikrofonu **pouze tehdy, když aktivně diktujete** — po klepnutí na tlačítko mikrofonu v klávesnici. Během nahrávání běží trvalé oznámení v liště, takže je vždy vidět, že mikrofon pracuje.
 
-- Je v reálném čase streamován do služby pro přepis (viz bod 4 — třetí strany).
-- **Není trvale ukládán** v zařízení ani na serverech (s výjimkou dočasného bufferu nutného pro zpracování).
-- Je odeslán pouze v zašifrované podobě (HTTPS / WSS).
+- Zvuk se zpracovává průběžně a **neukládá se do žádného souboru** — v telefonu ani na serveru. Aplikace nemá funkci „nahrávky" a žádné audio si neuchovává.
+- V **online režimu** se zvuk šifrovaně streamuje službě Soniox, která z něj dělá přepis (viz bod 4.1).
+- V **offline režimu** zvuk zpracovává rozpoznávač řeči přímo v telefonu (viz bod 4.3).
 
 ### 2.2 Přepsaný text
 
-Text vzniklý přepisem:
+- Vkládá se do aplikace, ve které právě píšete (Zprávy, e-mail, poznámky).
+- Ukládá se do lokální **Historie** v telefonu. Historii lze kdykoli smazat v menu Historie.
+- Pokud použijete **styl** (Vyčištění, Formátování, E-mail, Angličtina, Myšlenky), odešle se text ke zpracování do služby Anthropic (viz bod 4.2). Styl **Přepis** žádnou službu nevolá — text zůstane v telefonu.
 
-- Je zobrazen uživateli a vložen do aktuální aplikace (např. Zprávy, e‑mail).
-- Je uložen lokálně v zařízení v sekci „Historie" (pokud uživatel tuto funkci nevypne).
-- Pokud má uživatel zapnutý styl pro úpravu textu (např. „přeformulovat profesionálně"), je text odeslán do AI služby pro stylování (viz bod 4).
+Odesílá se **pouze text**, nikdy zvuk.
 
 ### 2.3 API klíče
 
-Pokud uživatel zadá vlastní API klíč pro službu OpenAI nebo Anthropic, klíč:
+Aplikace nemá vlastní servery ani sdílené klíče — službu Soniox i Anthropic platíte vlastním klíčem, který si sami zadáte v nastavení.
 
-- Je uložen **pouze v zařízení** v zašifrovaném úložišti (Android Keystore).
-- **Není odesílán** nikomu jinému než dané službě (OpenAI / Anthropic).
+- Klíče jsou uloženy **jen v telefonu**, v šifrovaném úložišti (`EncryptedSharedPreferences`); šifrovací klíč je v Android Keystore, tedy v hardwarově chráněné části zařízení.
+- Klíč se posílá **výhradně té službě, které patří**, a nikomu jinému.
 
-### 2.4 Osobní slovník a zkratky
+### 2.4 Slovník, zkratky a styly
 
-Uživatel může uložit vlastní slovník (oprava výslovnosti, např. „Vokoun" místo „Wokoun") a zkratky (např. „adr" → „Praha 5, Anglická 26"). Tyto údaje:
+Vlastní slovník (např. „Vokoun" místo „Wokoun"), textové zkratky (např. „adr" → adresa) a nastavení stylů:
 
-- Jsou uloženy **pouze v zařízení**.
-- **Nejsou odesílány** žádné třetí straně.
+- Jsou uloženy **jen v telefonu**.
+- **Neodesílají se** nikam ven — s jedinou výjimkou: pokud se slovníkový výraz nebo rozvinutá zkratka objeví v diktovaném textu a vy použijete styl, odejde jako součást toho textu do Anthropicu, aby ho model neopravil na jiný tvar.
 
-### 2.5 Statistiky a logy
+### 2.5 Statistiky
 
-Aplikace lokálně zaznamenává:
+Aplikace si lokálně počítá přepsaná slova a odhad ušetřeného času. Tato čísla **zůstávají v telefonu** a nikam se neposílají.
 
-- Statistiku ušetřeného času (počet přepsaných slov, čas).
-- Diagnostické logy (volitelné, lze vypnout).
+### 2.6 Diagnostický log
 
-Tyto údaje **zůstávají v zařízení** a nejsou odesílány nikam ven.
+Aplikace umí zapisovat technický log pro hledání chyb.
 
----
+- Je **ve výchozím stavu vypnutý**. Zapíná se ručně v Nastavení → Diagnostika.
+- Zapisuje se do souboru **uvnitř aplikace**, nikam se neodesílá. Obsah si můžete prohlédnout, zkopírovat, sdílet nebo smazat — odeslání je vždy vaše vědomé rozhodnutí.
 
-## 3. K čemu údaje používáme
+### 2.7 Co aplikace NEZPRACOVÁVÁ
 
-| Účel | Údaje | Právní základ (GDPR) |
-|------|-------|----------------------|
-| Přepis řeči na text | Zvuk z mikrofonu | Plnění smlouvy (poskytnutí služby) |
-| Stylování textu (volitelné) | Přepsaný text | Souhlas uživatele (lze kdykoli odvolat) |
-| Lokální historie přepisů | Přepsaný text | Oprávněný zájem uživatele |
-| Diagnostické logy (volitelné) | Technická data | Oprávněný zájem (oprava chyb) |
+Aplikace neobsahuje žádnou analytiku, žádné SDK pro hlášení pádů ani reklamní knihovny. Konkrétně v ní **není** Firebase, Google Analytics, Sentry, TelemetryDeck ani Supabase. Nesleduje, které aplikace používáte, a nevytváří o vás žádný profil ani identifikátor.
 
 ---
 
-## 4. Třetí strany — komu předáváme data
+## 3. Kde jsou data uložena
 
-Aplikace funguje **online** (cloud přepis) i **offline** (přepis přímo v zařízení). Předávání údajů třetím stranám probíhá **pouze v online režimu**.
+| Údaj | Kde | Zálohuje se? |
+|---|---|---|
+| Zvuk | Nikde — neukládá se | — |
+| Přepsaný text (Historie) | Databáze v telefonu | Ne |
+| Slovník, zkratky, styly | Databáze v telefonu | Ne |
+| Statistiky | Databáze v telefonu | Ne |
+| API klíče | Šifrované úložiště + Android Keystore | Ne |
+| Diagnostický log | Soubor uvnitř aplikace | Ne |
 
-### 4.1 Soniox, Inc. (USA)
-
-- **Co:** Zvuk z mikrofonu (streamem)
-- **Účel:** Real-time přepis řeči na text
-- **Doba uchování:** Dle [politiky Soniox](https://soniox.com/privacy)
-- **Předání mimo EU:** Ano (USA — adekvátnost zajištěna [DPF](https://www.dataprivacyframework.gov/))
-
-### 4.2 OpenAI, L.L.C. (USA) — volitelné
-
-- **Co:** Přepsaný text (pokud uživatel použije funkci stylování s OpenAI klíčem)
-- **Účel:** Úprava textu (přeformulování, korektura)
-- **Doba uchování:** Dle [politiky OpenAI](https://openai.com/policies/privacy-policy)
-- **Aktivace:** Pouze pokud uživatel sám zadá svůj API klíč
-
-### 4.3 Anthropic, PBC (USA) — volitelné
-
-- **Co:** Přepsaný text (pokud uživatel použije funkci stylování s Anthropic klíčem)
-- **Účel:** Úprava textu (přeformulování, korektura)
-- **Doba uchování:** Dle [politiky Anthropic](https://www.anthropic.com/privacy)
-- **Aktivace:** Pouze pokud uživatel sám zadá svůj API klíč
-
-### 4.4 Google Play (Google LLC)
-
-- **Co:** Anonymizovaná data o instalacích, pádech a používání (přes Google Play Services)
-- **Účel:** Distribuce aplikace, sledování stability
-- **Doba uchování:** Dle [politiky Google](https://policies.google.com/privacy)
+Aplikace má **vypnuté zálohování** (`allowBackup="false"`) a navíc výslovně vyloučená svá data z přímého přenosu mezi telefony. Diktovaný text se tak nedostane do zálohy na Google účtu ani na nový telefon při jeho nastavování. Aplikace nemá žádnou synchronizaci mezi zařízeními.
 
 ---
 
-## 5. Co se NEPOSÍLÁ nikam ven
+## 4. Třetí strany — komu se data předávají
 
-Při použití **offline režimu** (lokální přepis pomocí knihovny whisper.cpp):
+### 4.1 Soniox, Inc. (USA) — online přepis
 
-- Zvuk **neopouští zařízení**.
-- Přepis probíhá výhradně lokálně.
-- Žádná data se neposílají na žádný server.
+- **Co se odesílá:** zvuk z mikrofonu, streamem, jen po dobu diktování
+- **Účel:** převod řeči na text v reálném čase
+- **Kdy:** v online režimu, tedy ve výchozím nastavení
+- **Přenos:** šifrovaně (WSS/TLS)
+- **Uchování:** dle [zásad Soniox](https://soniox.com/privacy)
+- **Předání mimo EU:** ano (USA)
 
-Lokálně uložená data (historie, slovník, zkratky, statistiky) **nikdy neopouštějí zařízení**.
+### 4.2 Anthropic, PBC (USA) — stylování textu
+
+- **Co se odesílá:** přepsaný text. Nikdy zvuk.
+- **Účel:** úprava textu podle vybraného stylu
+- **Kdy:** jen když použijete styl, který model volá. Styl Přepis text neodesílá.
+- **Přenos:** šifrovaně (HTTPS/TLS)
+- **Uchování:** dle [zásad Anthropic](https://www.anthropic.com/privacy)
+- **Předání mimo EU:** ano (USA)
+
+### 4.3 Google — rozpoznávání řeči v telefonu (offline režim)
+
+Offline režim používá rozpoznávač řeči vestavěný v Androidu, který dodává Google.
+
+- Na **Androidu 13 a novějším** aplikace používá rozhraní, které pracuje výhradně v zařízení — zvuk telefon neopustí.
+- Na **starším Androidu** aplikace o zpracování v zařízení požádá, ale systém není povinen vyhovět. Pokud v telefonu chybí offline jazykový balíček, může Google zvuk zpracovat na svých serverech. Zaručeně offline je proto jen Android 13 a novější.
+- Offline režim v praxi funguje **jen pro angličtinu** — Google pro češtinu rozpoznávání v zařízení nenabízí. Česky lze diktovat pouze online přes Soniox.
+
+Zpracování v tomto režimu se řídí [zásadami Google](https://policies.google.com/privacy).
+
+### 4.4 Google Play (Google LLC) — distribuce
+
+Aplikace se šíří přes Google Play. Samotná aplikace do Play nic neposílá a neobsahuje Play Services, ale obchod na úrovni systému sbírá anonymní údaje o instalacích a pádech (Android Vitals). To je mimo kontrolu aplikace a řídí se [zásadami Google](https://policies.google.com/privacy).
 
 ---
 
-## 6. Doba uchovávání údajů
+## 5. Oprávnění klávesnice
 
-- **V zařízení:** do doby, než uživatel data smaže (manuálně nebo odinstalováním aplikace).
-- **U třetích stran:** dle jejich politik (viz bod 4).
+Android klávesnice je systémová komponenta a při jejím zapnutí vás systém varuje, že „může sbírat veškerý text, který píšete". Je to obecné upozornění, které Android zobrazuje u každé klávesnice.
+
+Uttero čte obsah pole jen v rozsahu nutném pro vložení diktovaného textu na správné místo. **Nezaznamenává, co píšete na klávesnici, a nic z toho neodesílá.** Ven odchází výhradně to, co sami nadiktujete, a to způsobem popsaným v bodu 4.
+
+Aplikace požaduje tato oprávnění:
+
+| Oprávnění | K čemu |
+|---|---|
+| Mikrofon | Nahrávání řeči při diktování |
+| Internet, stav sítě | Přepis přes Soniox a stylování přes Anthropic |
+| Služba na popředí (mikrofon) | Aby nahrávání nepřerušil systém |
+| Oznámení | Trvalé oznámení během nahrávání |
+| Vibrace, probuzení obrazovky | Odezva při vkládání textu, obrazovka nezhasne během diktátu |
 
 ---
 
-## 7. Práva uživatele (GDPR)
+## 6. Doba uchovávání
 
-Jako uživatel máte právo:
+- **V telefonu:** dokud data nesmažete — v menu Historie, Slovník, Zkratky, Statistiky, Diagnostika, nebo odinstalováním aplikace. Odinstalace smaže úplně všechno včetně API klíčů.
+- **U třetích stran:** dle jejich zásad (viz bod 4).
 
-- **Na přístup** k údajům, které o vás zpracováváme — kontaktujte nás (viz bod 11).
+---
+
+## 7. Vaše práva (GDPR)
+
+Máte právo:
+
+- **Na přístup** k údajům, které o vás zpracováváme. Prakticky jsou všechny vidět přímo v aplikaci — provozovatel k nim nemá přístup, protože neopouštějí váš telefon.
 - **Na opravu** nepřesných údajů.
-- **Na výmaz** — všechna lokální data smažete odinstalováním aplikace nebo přes menu Historie / Statistiky / Slovník / Zkratky → smazat. U dat předaných třetím stranám se obraťte přímo na ně (Soniox, OpenAI, Anthropic).
-- **Na omezení zpracování**.
-- **Na přenositelnost údajů** — historii přepisů si můžete exportovat z menu „Historie".
+- **Na výmaz** — lokální data smažete v aplikaci nebo jejím odinstalováním. U dat předaných třetím stranám se obraťte přímo na ně (Soniox, Anthropic, Google).
+- **Na omezení zpracování** — offline režim, případně nepoužívání stylů.
+- **Na přenositelnost** — historii přepisů si můžete exportovat z menu Historie.
 - **Vznést námitku** proti zpracování.
-- **Podat stížnost** u dozorového úřadu (v ČR: [Úřad pro ochranu osobních údajů](https://uoou.gov.cz)).
+- **Podat stížnost** u dozorového úřadu (v ČR [Úřad pro ochranu osobních údajů](https://uoou.gov.cz)).
+
+Právním základem je plnění smlouvy u samotného přepisu, váš souhlas u stylování (odvoláte ho tím, že styly nepoužijete) a oprávněný zájem u lokální historie a diagnostiky.
 
 ---
 
 ## 8. Děti
 
-Aplikace není určena pro osoby mladší **16 let**. Pokud jste rodič a domníváte se, že nám vaše dítě poskytlo údaje, kontaktujte nás — údaje smažeme.
+Aplikace není určena osobám mladším **16 let**. Pokud jste rodič a máte podezření, že aplikaci používá vaše dítě, kontaktujte nás — poradíme, jak data smazat.
 
 ---
 
-## 9. Bezpečnost
+## 9. Reklama a sledování
 
-- Veškerá komunikace s třetími stranami probíhá výhradně **šifrovaně** (HTTPS / WSS / TLS 1.2+).
-- API klíče jsou v zařízení uloženy v **Android Keystore** (hardwarově chráněném úložišti).
-- Lokální data jsou chráněna standardním zabezpečením operačního systému Android.
+Aplikace neobsahuje reklamu, sledovací pixely ani reklamní identifikátory. Data se **neprodávají** a nepředávají nikomu kromě služeb uvedených v bodu 4, které je zpracovávají výhradně pro popsaný účel.
 
 ---
 
-## 10. Změny zásad
+## 10. Bezpečnost
 
-Jakékoli změny těchto zásad zveřejníme na stejné stránce s aktualizovaným datem účinnosti. U podstatných změn vás upozorníme přímo v aplikaci.
+- Veškerá komunikace se službami běží **šifrovaně** (HTTPS / WSS / TLS 1.2+).
+- API klíče jsou uloženy v šifrovaném úložišti, jehož klíč sedí v Android Keystore.
+- Data aplikace jsou chráněna standardní izolací aplikací v Androidu a vyloučena ze záloh.
 
 ---
 
-## 11. Kontakt
+## 11. Změny zásad
+
+Změny zveřejníme na této stránce s aktualizovaným datem účinnosti. U podstatných změn upozorníme přímo v aplikaci.
+
+---
+
+## 12. Kontakt
 
 **Pavel Vokoun**
-Email: pavel.vokoun@gmail.com
+E-mail: pavel.vokoun@gmail.com
 
-V případě dotazů, žádostí o výmaz nebo jiných práv napište na uvedený email. Odpovíme do 30 dnů.
+V případě dotazů, žádosti o výmaz nebo uplatnění jiných práv napište na uvedený e-mail. Odpovíme do 30 dnů.
 
 ---
 
-*Anglická verze tohoto dokumentu je k dispozici na: [English version](./privacy-en.md)*
+*English version of this document: [English version](./privacy-en.md)*

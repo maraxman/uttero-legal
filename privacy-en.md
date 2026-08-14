@@ -1,7 +1,8 @@
 # Privacy Policy — Uttero
 
-**Effective date:** May 5, 2026
-**Version:** 1.0
+**Effective date:** August 14, 2026
+**Version:** 2.0
+**Applies to:** Uttero for Android (`app.uttero.android`)
 **Operator:** Pavel Vokoun, individual, Czech Republic
 **Contact:** pavel.vokoun@gmail.com
 
@@ -9,9 +10,11 @@
 
 ## 1. Introduction
 
-This Privacy Policy describes what data the **Uttero** application (the "App") collects, how it uses the data, and to whom it is shared. The App is a dictation keyboard that converts speech to text.
+This policy describes what data the **Uttero** application (the "App") processes, where it stores it, and to whom it is disclosed. Uttero is an Android dictation keyboard that converts speech to text.
 
-By using the App, you agree to the data processing described in this document.
+The App has no user accounts and requires no registration. All data is created and stays on your phone, except for what is described in Section 4.
+
+Uttero for Android is a port of the [iOS app Uttero](https://danielgamrot.cz/nastroje/uttero-ios/) by Daniel Gamrot. It is a separate application with a separate codebase — no data is shared between the versions, and this policy applies to the Android version only.
 
 ---
 
@@ -19,149 +22,176 @@ By using the App, you agree to the data processing described in this document.
 
 ### 2.1 Microphone Audio
 
-The App accesses the device microphone **only when you actively dictate** (the user taps the microphone button in the keyboard). The audio:
+The App accesses the microphone **only while you are actively dictating** — after you tap the microphone button in the keyboard. A persistent notification runs during recording, so it is always visible that the microphone is in use.
 
-- Is streamed in real time to a transcription service (see Section 4 — third parties).
-- **Is not permanently stored** on the device or on servers (except for a temporary buffer required for processing).
-- Is sent only in encrypted form (HTTPS / WSS).
+- Audio is processed on the fly and **is never written to a file** — neither on the phone nor on a server. The App has no "recordings" feature and keeps no audio.
+- In **online mode**, audio is streamed encrypted to Soniox, which turns it into text (see 4.1).
+- In **offline mode**, audio is processed by a speech recognizer on the phone itself (see 4.3).
 
 ### 2.2 Transcribed Text
 
-The text resulting from transcription:
+- It is inserted into whatever app you are typing in (Messages, email, notes).
+- It is saved to the local **History** on the phone. History can be deleted at any time from the History menu.
+- If you apply a **style** (Cleanup, Formatting, Email, English, Thoughts), the text is sent to Anthropic for processing (see 4.2). The **Transcript** style calls no service — the text stays on the phone.
 
-- Is shown to the user and inserted into the active app (e.g., Messages, email).
-- Is stored locally on the device under "History" (unless the user disables this feature).
-- If the user enables a style for text editing (e.g., "rephrase professionally"), the text is sent to an AI service for styling (see Section 4).
+Only **text** is ever sent, never audio.
 
 ### 2.3 API Keys
 
-If the user enters their own API key for OpenAI or Anthropic, the key:
+The App has no servers and no shared keys — you pay for Soniox and Anthropic with your own key, which you enter in settings yourself.
 
-- Is stored **only on the device** in encrypted storage (Android Keystore).
-- **Is not shared** with anyone other than the corresponding service (OpenAI / Anthropic).
+- Keys are stored **only on the phone**, in encrypted storage (`EncryptedSharedPreferences`); the encryption key lives in the Android Keystore, a hardware-backed part of the device.
+- A key is sent **only to the service it belongs to**, and to no one else.
 
-### 2.4 Personal Dictionary and Shortcuts
+### 2.4 Dictionary, Shortcuts, and Styles
 
-The user can save a custom dictionary (pronunciation corrections, e.g., "Vokoun" instead of "Wokoun") and shortcuts (e.g., "addr" → "Praha 5, Anglická 26"). This data:
+Your custom dictionary (e.g., "Vokoun" instead of "Wokoun"), text shortcuts (e.g., "addr" → an address), and style settings:
 
-- Is stored **only on the device**.
-- **Is not shared** with any third party.
+- Are stored **only on the phone**.
+- Are **not sent** anywhere, with one exception: if a dictionary term or an expanded shortcut appears in the dictated text and you apply a style, it travels to Anthropic as part of that text, so the model does not "correct" it into a different form.
 
-### 2.5 Statistics and Logs
+### 2.5 Statistics
 
-The App locally records:
+The App locally counts transcribed words and an estimate of time saved. These figures **stay on the phone** and are not sent anywhere.
 
-- Time-saved statistics (number of transcribed words, time).
-- Diagnostic logs (optional, can be disabled).
+### 2.6 Diagnostic Log
 
-This data **stays on the device** and is not sent anywhere.
+The App can write a technical log for troubleshooting.
 
----
+- It is **off by default**. You turn it on manually in Settings → Diagnostics.
+- It is written to a file **inside the App** and is never sent anywhere. You can view, copy, share, or delete its contents — sending it is always your deliberate choice.
 
-## 3. How We Use Data
+### 2.7 What the App Does NOT Process
 
-| Purpose | Data | Legal basis (GDPR) |
-|---------|------|--------------------|
-| Speech-to-text transcription | Microphone audio | Performance of contract (service provision) |
-| Text styling (optional) | Transcribed text | User consent (revocable any time) |
-| Local transcript history | Transcribed text | Legitimate user interest |
-| Diagnostic logs (optional) | Technical data | Legitimate interest (bug fixing) |
+The App contains no analytics, no crash-reporting SDK, and no advertising libraries. Specifically, it does **not** include Firebase, Google Analytics, Sentry, TelemetryDeck, or Supabase. It does not track which apps you use and builds no profile or identifier about you.
 
 ---
 
-## 4. Third Parties — Data Recipients
+## 3. Where Data Is Stored
 
-The App works in both **online** (cloud transcription) and **offline** (on-device transcription) modes. Data is shared with third parties **only in online mode**.
+| Data | Where | Backed up? |
+|---|---|---|
+| Audio | Nowhere — not stored | — |
+| Transcribed text (History) | Database on the phone | No |
+| Dictionary, shortcuts, styles | Database on the phone | No |
+| Statistics | Database on the phone | No |
+| API keys | Encrypted storage + Android Keystore | No |
+| Diagnostic log | File inside the App | No |
 
-### 4.1 Soniox, Inc. (USA)
-
-- **What:** Microphone audio (streamed)
-- **Purpose:** Real-time speech-to-text transcription
-- **Retention:** Per [Soniox policy](https://soniox.com/privacy)
-- **Transfer outside EU:** Yes (USA — adequacy ensured by [DPF](https://www.dataprivacyframework.gov/))
-
-### 4.2 OpenAI, L.L.C. (USA) — Optional
-
-- **What:** Transcribed text (when the user uses the styling feature with an OpenAI key)
-- **Purpose:** Text editing (rephrasing, proofreading)
-- **Retention:** Per [OpenAI policy](https://openai.com/policies/privacy-policy)
-- **Activation:** Only if the user provides their own API key
-
-### 4.3 Anthropic, PBC (USA) — Optional
-
-- **What:** Transcribed text (when the user uses the styling feature with an Anthropic key)
-- **Purpose:** Text editing (rephrasing, proofreading)
-- **Retention:** Per [Anthropic policy](https://www.anthropic.com/privacy)
-- **Activation:** Only if the user provides their own API key
-
-### 4.4 Google Play (Google LLC)
-
-- **What:** Anonymized installation, crash, and usage data (via Google Play Services)
-- **Purpose:** App distribution, stability tracking
-- **Retention:** Per [Google policy](https://policies.google.com/privacy)
+The App has **backups disabled** (`allowBackup="false"`) and additionally excludes its data from direct phone-to-phone transfer. Dictated text therefore never reaches a Google account backup or a new phone during setup. The App has no cross-device synchronization.
 
 ---
 
-## 5. What Is NEVER Sent Anywhere
+## 4. Third Parties — Who Receives Data
 
-When using **offline mode** (local transcription via the whisper.cpp library):
+### 4.1 Soniox, Inc. (USA) — online transcription
 
-- Audio **never leaves the device**.
-- Transcription happens entirely locally.
-- No data is sent to any server.
+- **What is sent:** microphone audio, streamed, only while you dictate
+- **Purpose:** real-time speech-to-text
+- **When:** in online mode, which is the default
+- **Transport:** encrypted (WSS/TLS)
+- **Retention:** per [Soniox policy](https://soniox.com/privacy)
+- **Transfer outside the EU:** yes (USA)
 
-Locally stored data (history, dictionary, shortcuts, statistics) **never leaves the device**.
+### 4.2 Anthropic, PBC (USA) — text styling
+
+- **What is sent:** the transcribed text. Never audio.
+- **Purpose:** rewriting the text according to the selected style
+- **When:** only when you use a style that calls the model. The Transcript style sends nothing.
+- **Transport:** encrypted (HTTPS/TLS)
+- **Retention:** per [Anthropic policy](https://www.anthropic.com/privacy)
+- **Transfer outside the EU:** yes (USA)
+
+### 4.3 Google — on-device speech recognition (offline mode)
+
+Offline mode uses the speech recognizer built into Android and supplied by Google.
+
+- On **Android 13 and newer**, the App uses an interface that works strictly on the device — audio does not leave the phone.
+- On **older Android**, the App asks for on-device processing, but the system is not obliged to comply. If the offline language pack is missing, Google may process the audio on its servers. Guaranteed offline processing therefore applies to Android 13 and newer only.
+- In practice, offline mode works **for English only** — Google offers no on-device recognition for Czech. Czech dictation is possible only online via Soniox.
+
+Processing in this mode is governed by the [Google privacy policy](https://policies.google.com/privacy).
+
+### 4.4 Google Play (Google LLC) — distribution
+
+The App is distributed through Google Play. The App itself sends nothing to Play and contains no Play Services, but the store collects anonymous installation and crash data at the system level (Android Vitals). This is outside the App's control and is governed by the [Google privacy policy](https://policies.google.com/privacy).
+
+---
+
+## 5. Keyboard Permissions
+
+An Android keyboard is a system component, and when you enable one, the system warns you that it "may be able to collect all the text you type". This is a generic warning Android shows for every keyboard.
+
+Uttero reads the content of a text field only as far as it needs to place dictated text in the right spot. **It does not record what you type on the keyboard and sends none of it anywhere.** The only thing that leaves the device is what you dictate, in the way described in Section 4.
+
+The App requests these permissions:
+
+| Permission | What for |
+|---|---|
+| Microphone | Recording speech while dictating |
+| Internet, network state | Transcription via Soniox and styling via Anthropic |
+| Foreground service (microphone) | So the system does not interrupt recording |
+| Notifications | The persistent notification shown while recording |
+| Vibration, wake lock | Feedback when text is inserted; screen stays on while dictating |
 
 ---
 
 ## 6. Data Retention
 
-- **On the device:** until the user deletes the data (manually or by uninstalling the App).
+- **On the phone:** until you delete the data — via the History, Dictionary, Shortcuts, Statistics, or Diagnostics menus, or by uninstalling the App. Uninstalling removes everything, including API keys.
 - **At third parties:** per their policies (see Section 4).
 
 ---
 
-## 7. User Rights (GDPR)
+## 7. Your Rights (GDPR)
 
-As a user, you have the right to:
+You have the right to:
 
-- **Access** the data we process about you — contact us (see Section 11).
+- **Access** the data processed about you. In practice all of it is visible directly in the App — the operator has no access to it, because it never leaves your phone.
 - **Rectification** of inaccurate data.
-- **Erasure** — you can delete all local data by uninstalling the App or via the menu History / Statistics / Dictionary / Shortcuts → delete. For data shared with third parties, contact them directly (Soniox, OpenAI, Anthropic).
-- **Restriction of processing**.
-- **Data portability** — you can export the transcript history from the "History" menu.
+- **Erasure** — delete local data in the App or by uninstalling it. For data passed to third parties, contact them directly (Soniox, Anthropic, Google).
+- **Restriction of processing** — use offline mode, or simply do not use styles.
+- **Data portability** — you can export the transcript history from the History menu.
 - **Object** to processing.
-- **Lodge a complaint** with a supervisory authority (in the Czech Republic: [Office for Personal Data Protection](https://uoou.gov.cz)).
+- **Lodge a complaint** with a supervisory authority (in the Czech Republic, the [Office for Personal Data Protection](https://uoou.gov.cz)).
+
+The legal basis is performance of a contract for the transcription itself, your consent for styling (withdrawn by not using styles), and legitimate interest for the local history and diagnostics.
 
 ---
 
 ## 8. Children
 
-The App is not intended for persons under **16 years of age**. If you are a parent and believe your child has provided us with data, please contact us — we will delete the data.
+The App is not intended for persons under **16 years of age**. If you are a parent and suspect your child is using the App, contact us and we will advise on deleting the data.
 
 ---
 
-## 9. Security
+## 9. Advertising and Tracking
 
-- All communication with third parties is exclusively **encrypted** (HTTPS / WSS / TLS 1.2+).
-- API keys are stored on the device in **Android Keystore** (hardware-backed storage).
-- Local data is protected by the standard security of the Android operating system.
+The App contains no advertising, no tracking pixels, and no advertising identifiers. Data is **not sold** and is not passed to anyone other than the services listed in Section 4, which process it solely for the stated purpose.
 
 ---
 
-## 10. Policy Changes
+## 10. Security
 
-Any changes to this Policy will be published on the same page with an updated effective date. For substantial changes, we will notify you directly within the App.
+- All communication with services is **encrypted** (HTTPS / WSS / TLS 1.2+).
+- API keys are held in encrypted storage whose key sits in the Android Keystore.
+- App data is protected by standard Android app sandboxing and excluded from backups.
 
 ---
 
-## 11. Contact
+## 11. Policy Changes
+
+Changes will be published on this page with an updated effective date. For substantial changes, we will notify you within the App.
+
+---
+
+## 12. Contact
 
 **Pavel Vokoun**
 Email: pavel.vokoun@gmail.com
 
-For questions, deletion requests, or other rights, please write to the email above. We will respond within 30 days.
+For questions, deletion requests, or to exercise other rights, write to the address above. We will respond within 30 days.
 
 ---
 
-*A Czech version of this document is available at: [Česká verze](./privacy-cs.md)*
+*Česká verze tohoto dokumentu: [Česká verze](./privacy-cs.md)*
