@@ -1,7 +1,7 @@
 # Zásady ochrany osobních údajů — Uttero
 
-**Účinné od:** 14. srpna 2026
-**Verze:** 2.0
+**Účinné od:** 16. září 2026
+**Verze:** 2.1
 **Platí pro:** Uttero pro Android (`app.uttero.android`)
 **Provozovatel:** Pavel Vokoun, fyzická osoba, Česká republika
 **Kontakt:** pavel.vokoun@gmail.com
@@ -26,19 +26,19 @@ Aplikace přistupuje k mikrofonu **pouze tehdy, když aktivně diktujete** — p
 
 - Zvuk se zpracovává průběžně a **neukládá se do žádného souboru** — v telefonu ani na serveru. Aplikace nemá funkci „nahrávky" a žádné audio si neuchovává.
 - V **online režimu** se zvuk šifrovaně streamuje službě Soniox, která z něj dělá přepis (viz bod 4.1).
-- V **offline režimu** zvuk zpracovává rozpoznávač řeči přímo v telefonu (viz bod 4.3).
+- V **offline režimu** zvuk zpracovává rozpoznávač řeči přímo v telefonu (viz bod 4.4).
 
 ### 2.2 Přepsaný text
 
 - Vkládá se do aplikace, ve které právě píšete (Zprávy, e-mail, poznámky).
 - Ukládá se do lokální **Historie** v telefonu. Historii lze kdykoli smazat v menu Historie.
-- Pokud použijete **styl** (Vyčištění, Formátování, E-mail, Angličtina, Myšlenky), odešle se text ke zpracování do služby Anthropic (viz bod 4.2). Styl **Přepis** žádnou službu nevolá — text zůstane v telefonu.
+- Pokud použijete **styl** (Vyčištění, Formátování, E-mail, Angličtina, Myšlenky) nebo režim **Asistent**, odešle se text poskytovateli AI, kterého jste vybrali v Nastavení: Anthropic nebo OpenAI (viz body 4.2 a 4.3). Styl **Přepis** žádnou AI službu nevolá — text zůstane v telefonu.
 
 Odesílá se **pouze text**, nikdy zvuk.
 
 ### 2.3 API klíče
 
-Aplikace nemá vlastní servery ani sdílené klíče — službu Soniox i Anthropic platíte vlastním klíčem, který si sami zadáte v nastavení.
+Aplikace nemá vlastní servery ani sdílené klíče. Zadáváte vlastní klíč pro Soniox a, pokud používáte styly nebo Asistenta, také pro Anthropic nebo OpenAI.
 
 - Klíče jsou uloženy **jen v telefonu**, v šifrovaném úložišti (`EncryptedSharedPreferences`); šifrovací klíč je v Android Keystore, tedy v hardwarově chráněné části zařízení.
 - Klíč se posílá **výhradně té službě, které patří**, a nikomu jinému.
@@ -48,7 +48,7 @@ Aplikace nemá vlastní servery ani sdílené klíče — službu Soniox i Anthr
 Vlastní slovník (např. „Vokoun" místo „Wokoun"), textové zkratky (např. „adr" → adresa) a nastavení stylů:
 
 - Jsou uloženy **jen v telefonu**.
-- **Neodesílají se** nikam ven — s jedinou výjimkou: pokud se slovníkový výraz nebo rozvinutá zkratka objeví v diktovaném textu a vy použijete styl, odejde jako součást toho textu do Anthropicu, aby ho model neopravil na jiný tvar.
+- **Neodesílají se** nikam ven — s jedinou výjimkou: pokud se slovníkový výraz nebo rozvinutá zkratka objeví v diktovaném textu a použijete styl, odejde jako součást textu vybranému poskytovateli AI, aby ho model neopravil na jiný tvar.
 
 ### 2.5 Statistiky
 
@@ -93,16 +93,25 @@ Aplikace má **vypnuté zálohování** (`allowBackup="false"`) a navíc výslov
 - **Uchování:** dle [zásad Soniox](https://soniox.com/privacy)
 - **Předání mimo EU:** ano (USA)
 
-### 4.2 Anthropic, PBC (USA) — stylování textu
+### 4.2 Anthropic, PBC (USA) — volitelné zpracování textu
 
 - **Co se odesílá:** přepsaný text. Nikdy zvuk.
-- **Účel:** úprava textu podle vybraného stylu
-- **Kdy:** jen když použijete styl, který model volá. Styl Přepis text neodesílá.
+- **Účel:** úprava textu podle vybraného stylu nebo odpověď na požadavek Asistenta
+- **Kdy:** jen když je v Nastavení vybrán Anthropic a použijete styl, který model volá, nebo režim Asistent. Styl Přepis text neodesílá.
 - **Přenos:** šifrovaně (HTTPS/TLS)
 - **Uchování:** dle [zásad Anthropic](https://www.anthropic.com/privacy)
 - **Předání mimo EU:** ano (USA)
 
-### 4.3 Google — rozpoznávání řeči v telefonu (offline režim)
+### 4.3 OpenAI, LLC (USA) — volitelné zpracování textu
+
+- **Co se odesílá:** přepsaný text. Nikdy zvuk.
+- **Účel:** úprava textu podle vybraného stylu nebo odpověď na požadavek Asistenta
+- **Kdy:** jen když je v Nastavení vybráno OpenAI a použijete styl, který model volá, nebo režim Asistent. Styl Přepis text neodesílá.
+- **Přenos:** šifrovaně (HTTPS/TLS)
+- **Uchování:** aplikace nastavuje `store=false`, takže Responses API neuchovává stav požadavku pro pozdější načtení. OpenAI může vstupy a výstupy API ponechat v logu pro kontrolu zneužití až 30 dnů, pokud váš účet OpenAI nemá přísnější režim uchování. Vstupy a výstupy API se ve výchozím nastavení nepoužívají k trénování modelů OpenAI. Podrobnosti uvádí [pravidla OpenAI pro data v API](https://platform.openai.com/docs/models/default-usage-policies-by-endpoint).
+- **Předání mimo EU:** ano (USA)
+
+### 4.4 Google — rozpoznávání řeči v telefonu (offline režim)
 
 Offline režim používá rozpoznávač řeči vestavěný v Androidu, který dodává Google.
 
@@ -112,7 +121,7 @@ Offline režim používá rozpoznávač řeči vestavěný v Androidu, který do
 
 Zpracování v tomto režimu se řídí [zásadami Google](https://policies.google.com/privacy).
 
-### 4.4 Google Play (Google LLC) — distribuce
+### 4.5 Google Play (Google LLC) — distribuce
 
 Aplikace se šíří přes Google Play. Samotná aplikace do Play nic neposílá a neobsahuje Play Services, ale obchod na úrovni systému sbírá anonymní údaje o instalacích a pádech (Android Vitals). To je mimo kontrolu aplikace a řídí se [zásadami Google](https://policies.google.com/privacy).
 
@@ -129,7 +138,7 @@ Aplikace požaduje tato oprávnění:
 | Oprávnění | K čemu |
 |---|---|
 | Mikrofon | Nahrávání řeči při diktování |
-| Internet, stav sítě | Přepis přes Soniox a stylování přes Anthropic |
+| Internet, stav sítě | Přepis přes Soniox a volitelné zpracování textu přes Anthropic nebo OpenAI |
 | Služba na popředí (mikrofon) | Aby nahrávání nepřerušil systém |
 | Oznámení | Trvalé oznámení během nahrávání |
 | Vibrace, probuzení obrazovky | Odezva při vkládání textu, obrazovka nezhasne během diktátu |
@@ -149,7 +158,7 @@ Máte právo:
 
 - **Na přístup** k údajům, které o vás zpracováváme. Prakticky jsou všechny vidět přímo v aplikaci — provozovatel k nim nemá přístup, protože neopouštějí váš telefon.
 - **Na opravu** nepřesných údajů.
-- **Na výmaz** — lokální data smažete v aplikaci nebo jejím odinstalováním. U dat předaných třetím stranám se obraťte přímo na ně (Soniox, Anthropic, Google).
+- **Na výmaz** — lokální data smažete v aplikaci nebo jejím odinstalováním. U dat předaných třetím stranám se obraťte přímo na ně (Soniox, Anthropic, OpenAI, Google).
 - **Na omezení zpracování** — offline režim, případně nepoužívání stylů.
 - **Na přenositelnost** — historii přepisů si můžete exportovat z menu Historie.
 - **Vznést námitku** proti zpracování.
@@ -161,7 +170,7 @@ Právním základem je plnění smlouvy u samotného přepisu, váš souhlas u s
 
 ## 8. Děti
 
-Aplikace není určena osobám mladším **16 let**. Pokud jste rodič a máte podezření, že aplikaci používá vaše dítě, kontaktujte nás — poradíme, jak data smazat.
+Aplikace není navržena speciálně pro děti. Osoba, která podle práva své země nemůže samostatně souhlasit se zpracováním údajů, by ji měla používat jen se souhlasem rodiče nebo zákonného zástupce. Rodič nebo zákonný zástupce nás může požádat o pomoc se smazáním místních dat a s žádostí o výmaz u příslušného poskytovatele služby.
 
 ---
 
